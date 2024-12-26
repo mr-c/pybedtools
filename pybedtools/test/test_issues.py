@@ -10,19 +10,10 @@ import psutil
 
 
 testdir = os.path.dirname(__file__)
-tempdir = os.path.join(os.path.abspath(testdir), "tmp")
 unwriteable = "unwriteable"
 
 
-def setup_module():
-    if not os.path.exists(tempdir):
-        os.system("mkdir -p %s" % tempdir)
-    pybedtools.set_tempdir(tempdir)
-
-
 def teardown_module():
-    if os.path.exists(tempdir):
-        os.system("rm -r %s" % tempdir)
     pybedtools.cleanup()
 
 

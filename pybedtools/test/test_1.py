@@ -1,24 +1,17 @@
 import pybedtools
 import os, difflib, sys
+import tempfile
+
 from pybedtools import featurefuncs
 import pytest
 
 import threading
 import warnings
-from .tfuncs import test_tempdir
 
 unwriteable = "unwriteable"
 
 
-def setup_module():
-    if not os.path.exists(test_tempdir):
-        os.system("mkdir -p %s" % test_tempdir)
-    pybedtools.set_tempdir(test_tempdir)
-
-
 def teardown_module():
-    if os.path.exists(test_tempdir):
-        os.system("rm -r %s" % test_tempdir)
     pybedtools.cleanup()
 
 
@@ -67,7 +60,8 @@ def cleanup_unwriteable():
     """
     if os.path.exists(unwriteable):
         os.system("rm -rf %s" % unwriteable)
-    pybedtools.set_tempdir(test_tempdir)
+    tempfile.tempdir = None
+    pybedtools.set_tempdir(tempfile.gettempdir())
 
 
 def test_interval_index():
@@ -503,6 +497,7 @@ def test_sequence():
     For example, the first 100 bases of a chromosome are defined as
     chromStart=0, chromEnd=100, and span the bases numbered 0-99. """
 
+    test_tempdir = os.path.abspath(tempfile.gettempdir())
     fi = os.path.join(test_tempdir, "test.fasta")
 
     s = """
